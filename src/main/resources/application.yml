@@ -1,0 +1,38 @@
+server:
+  port: 8082
+  tomcat:
+    threads:
+      min-spare: 10 # 最小工作线程数
+      max: 200 # 最大线程数
+    max-connections: 8192 # 接收和处理的最大连接数
+    accept-count: 100 # 可以放到处理队列中的请求数
+spring:
+  application:
+    name: questionnaire
+  datasource:
+    password: 986a188f
+    url: jdbc:mysql://localhost:3306/questionnaire?serverTimezone=Hongkong&useSSL=false&useServerPrepStmts=true&allowPublicKeyRetrieval=true
+    username: root
+    driver-class-name: com.mysql.jdbc.Driver
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password: 123456
+    lettuce:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+        max-wait: 500
+    database: 1
+mybatis-plus:
+  mapper-locations: classpath:dao/*.xml
+  configuration:
+    #在映射实体或者属性时，将数据库中表名和字段名中的下划线去掉，按照驼峰命名法映射
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: AUTO
+my:
+  Qprefix: AQ
