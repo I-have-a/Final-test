@@ -33,7 +33,7 @@ public class R<T> implements Serializable {
         return r;
     }
 
-    public static <T> R<T> error(String msg, Integer code) {
+    public static <T> R<T> error(Integer code, String msg) {
         R<T> r = new R<>();
         r.msg = msg;
         r.code = code;

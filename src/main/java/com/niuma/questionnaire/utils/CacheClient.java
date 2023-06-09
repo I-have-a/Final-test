@@ -2,6 +2,7 @@ package com.niuma.questionnaire.utils;
 
 import com.alibaba.fastjson2.JSON;
 import com.niuma.questionnaire.common.RedisData;
+import com.niuma.questionnaire.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -17,7 +18,6 @@ import java.util.function.Function;
 
 import static com.niuma.questionnaire.common.RedisConstant.CACHE_NULL_TIME;
 
-
 /**
  * 缓存工具类
  * 通过部分手法减小缓存击穿和缓存穿透问题，简化代码书写
@@ -29,6 +29,14 @@ public class CacheClient {
     public static final ExecutorService CACHE_REBUILD_EXECUTOR = Executors.newFixedThreadPool(10);
     @Resource
     StringRedisTemplate stringRedisTemplate;
+
+    public void set(String key, Object value) {
+        stringRedisTemplate.opsForValue().set(key, JSON.toJSONString(value));
+    }
+
+    public void set(String key, Object value, Long time) {
+        set(key, value, time, TimeUnit.SECONDS);
+    }
 
     /**
      * 存入redis，免转JSON
@@ -42,14 +50,8 @@ public class CacheClient {
         stringRedisTemplate.opsForValue().set(key, JSON.toJSONString(value), time, unit);
     }
 
-    /**
-     * 设置键永不过期
-     *
-     * @param key   键
-     * @param value 值
-     */
-    public void setKeyForever(String key, Object value) {
-        stringRedisTemplate.opsForValue().set(key, JSON.toJSONString(value));
+    public void setWithLogicalExpire(String key, Object value, Long time) {
+        setWithLogicalExpire(key, value, time, TimeUnit.MINUTES);
     }
 
     /**
@@ -64,7 +66,11 @@ public class CacheClient {
         RedisData redisData = new RedisData();
         redisData.setData(value);
         redisData.setExpireTime(LocalDateTime.now().plusSeconds(unit.toSeconds(time)));
-        stringRedisTemplate.opsForValue().set(key, JSON.toJSONString(redisData));
+        set(key, value);
+    }
+
+    public <ID> void queryWithPassThrough(String keyPrefix, ID id) {
+        Class<User> userClass = User.class;
     }
 
     /**
@@ -78,22 +84,22 @@ public class CacheClient {
      * 往后再查便不需要重复往数据库中查询
      * 防止缓存穿透
      */
-    public <T, ID, LT> T queryWithPassThrough(
-            String keyPrefix, ID id, Class<T> type, Function<ID, T> dbFallback, Long time, TimeUnit unit, Class<LT> listItem) {
+    public <T, ID, R> R queryWithPassThrough(
+            String keyPrefix, ID id, T type, Function<ID, R> dbFallback, Long time, TimeUnit unit, R re) {
         String key = keyPrefix + id;
         String json = stringRedisTemplate.opsForValue().get(key);
         if (json != null) {
             if (!"".equals(json)) {
-                if (type == List.class) return (T) JSON.parseArray(json, listItem);
-                return JSON.parseObject(json, type);
+                if (type instanceof List) return (R) JSON.parseArray(json, type.getClass());
+                return (R) JSON.parseObject(json, type.getClass());
             } else return null;
         }
-        T t = dbFallback.apply(id);
+        R t = dbFallback.apply(id);
         if (t == null) {
             stringRedisTemplate.opsForValue().set(key, "", CACHE_NULL_TIME, TimeUnit.MINUTES);
             return null;
         }
-        if (time == null && unit == null) this.setKeyForever(key, t);
+        if (time == null && unit == null) set(key, t);
         else this.set(key, t, time, unit);
         return t;
     }
@@ -151,5 +157,10 @@ public class CacheClient {
      */
     private void unlock(String key) {
         stringRedisTemplate.delete(key);
+    }
+
+    public <T> T getCacheObject(String redisKey, Class<T> type) {
+        String s = stringRedisTemplate.opsForValue().get(redisKey);
+        return JSON.parseObject(s, type);
     }
 }

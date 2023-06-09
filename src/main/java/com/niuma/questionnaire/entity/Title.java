@@ -15,4 +15,6 @@ public class Title {
     String content;
     @TableField(exist = false)
     List<Option> options;
+    @TableField(exist = false)
+    List<Answer> answers;
 }

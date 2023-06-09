@@ -1,19 +1,25 @@
 package com.niuma.questionnaire.contoller;
 
-import com.niuma.questionnaire.common.Code;
-import com.niuma.questionnaire.common.R;
-import com.niuma.questionnaire.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-@RestController("user")
+@Controller
 public class UserController {
-    @Autowired
-    UserService userService;
+    @GetMapping("/test")
+    public String getIndex(String error, Model model) {
+        model.addAttribute("msg", error);
+        return "user/error";
+    }
 
     @GetMapping("login")
-    public R<String> login() {
-        return R.error("在做", Code.ISNULL);
+    public String login() {
+        return "user/login";
+    }
+
+    @RequestMapping("/")
+    public String index() {
+        return "index";
     }
 }

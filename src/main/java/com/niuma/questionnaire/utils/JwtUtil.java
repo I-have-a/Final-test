@@ -22,15 +22,14 @@ public class JwtUtil {
     public static final String JWT_KEY = "test";
 
     public static String getUUID() {
-        String token = UUID.randomUUID().toString().replaceAll("-", "");
-        return token;
+        return UUID.randomUUID().toString().replaceAll("-", "");
     }
 
     /**
      * 生成jtw
      *
      * @param subject token中要存放的数据（json格式）
-     * @return
+     * @return jwt
      */
     public static String createJWT(String subject) {
         JwtBuilder builder = getJwtBuilder(subject, null, getUUID());// 设置过期时间
@@ -42,7 +41,7 @@ public class JwtUtil {
      *
      * @param subject   token中要存放的数据（json格式）
      * @param ttlMillis token超时时间
-     * @return
+     * @return jwt
      */
     public static String createJWT(String subject, Long ttlMillis) {
         JwtBuilder builder = getJwtBuilder(subject, ttlMillis, getUUID());// 设置过期时间
@@ -71,40 +70,39 @@ public class JwtUtil {
     /**
      * 创建token
      *
-     * @param id
-     * @param subject
-     * @param ttlMillis
-     * @return
+     * @param id        主键
+     * @param subject   信息
+     * @param ttlMillis 过期时长
+     * @return jwt
      */
     public static String createJWT(String id, String subject, Long ttlMillis) {
         JwtBuilder builder = getJwtBuilder(subject, ttlMillis, id);// 设置过期时间
         return builder.compact();
     }
 
-    public static void main(String[] args) throws Exception {
-        String jwt = createJWT("2123");
+//    public static void main(String[] args) throws Exception {
+//        String jwt = createJWT("2123");
 //        System.out.println(jwt);
-        Claims claims = parseJWT("eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJmZTA0NzA0M2QwMzg0MzRkODY3OGYyYWI4ZjBkYWRhZiIsInN1YiI6IjIxMjMiLCJpc3MiOiJzZyIsImlhdCI6MTY4NTcwNDA1MSwiZXhwIjoxNjg1NzA3NjUxfQ.XZf9sAiPZek3IL20QlJLA807kr8tuWWpuvAK8DnAFvg");
-        String subject = claims.getSubject();
-        System.out.println(subject);
-    }
+//        Claims claims = parseJWT("eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJmZTA0NzA0M2QwMzg0MzRkODY3OGYyYWI4ZjBkYWRhZiIsInN1YiI6IjIxMjMiLCJpc3MiOiJzZyIsImlhdCI6MTY4NTcwNDA1MSwiZXhwIjoxNjg1NzA3NjUxfQ.XZf9sAiPZek3IL20QlJLA807kr8tuWWpuvAK8DnAFvg");
+//        String subject = claims.getSubject();
+//        System.out.println(subject);
+//    }
 
     /**
      * 生成加密后的秘钥 secretKey
      *
-     * @return
+     * @return 加密后的key
      */
     public static SecretKey generalKey() {
         byte[] encodedKey = Base64.getDecoder().decode(JwtUtil.JWT_KEY);
-        SecretKey key = new SecretKeySpec(encodedKey, 0, encodedKey.length, "AES");
-        return key;
+        return new SecretKeySpec(encodedKey, 0, encodedKey.length, "AES");
     }
 
     /**
      * 解析
      *
-     * @param jwt
-     * @return
+     * @param jwt 解析的jwt
+     * @return jwt对象
      */
     public static Claims parseJWT(String jwt) {
         SecretKey secretKey = generalKey();
@@ -113,6 +111,4 @@ public class JwtUtil {
                 .parseClaimsJws(jwt)
                 .getBody();
     }
-
-
 }
