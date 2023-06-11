@@ -1,7 +1,7 @@
 package com.niuma.questionnaire.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.niuma.questionnaire.entity.Title;
+import com.niuma.questionnaire.entity.Option;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
@@ -10,6 +10,6 @@ import java.util.List;
 
 @Mapper
 @Repository
-public interface TitleMapper extends BaseMapper<Title> {
-    List<Title> getTitleByUserID(HashMap<String, Object> map);
+public interface OptionMapper extends BaseMapper<Option> {
+    List<Option> getOptionByTestID(HashMap<String,Option> map);
 }

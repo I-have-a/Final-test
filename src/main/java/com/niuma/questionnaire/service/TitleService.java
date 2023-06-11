@@ -6,7 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 
 public interface TitleService {
-    List<Title> getUserTitle(String userID);
 
-    List<Title> getTestTitle(HashMap<String,Object> map);
+    /**
+     * 获得用户创建的题目
+     * @return
+     */
+    List<Title> getTitle(HashMap<String,Object> map);
 }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.niuma.questionnaire.dao.OptionMapper">
+    <resultMap id="BaseList" type="com.niuma.questionnaire.entity.Option">
+        <result property="id" column="ID"/>
+        <result property="content" column="content"/>
+    </resultMap>
+    <select id="getOptionByTestID" resultType="com.niuma.questionnaire.entity.Option">
+        SELECT
+            `option`.content AS Ocontent,
+            `option`.ID
+        FROM
+            `option`
+            INNER JOIN title ON `option`.TID = title.ID
+        WHERE
+            title.TID = #{TID}
+    </select>
+
+
+</mapper>

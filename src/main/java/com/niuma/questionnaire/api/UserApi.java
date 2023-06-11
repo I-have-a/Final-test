@@ -6,10 +6,7 @@ import com.niuma.questionnaire.entity.Answer;
 import com.niuma.questionnaire.entity.Test;
 import com.niuma.questionnaire.entity.Title;
 import com.niuma.questionnaire.entity.User;
-import com.niuma.questionnaire.service.AnswerService;
-import com.niuma.questionnaire.service.TestService;
-import com.niuma.questionnaire.service.TitleService;
-import com.niuma.questionnaire.service.UserService;
+import com.niuma.questionnaire.service.*;
 import com.niuma.questionnaire.utils.Common;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,6 +38,9 @@ public class UserApi {
     @Autowired
     PasswordEncoder encoder;
 
+    @Autowired
+    OptionService optionService;
+
     @PostMapping("login")
     public R<String> login(String account, String password) {
         HashMap<String, Object> map = new HashMap<>();
@@ -68,8 +68,15 @@ public class UserApi {
     @GetMapping("title")
     public R<List<Title>> title(HttpServletRequest request) {
         String userID = Common.JwtUser(request);
-        List<Title> titles = titleService.getUserTitle(userID);
-        if (titles == null) R.error(Code.ISNULL, "没有");
+        HashMap<String,Object> map = new HashMap<>();
+        map.put("UID",userID);
+        List<Title> titles = titleService.getTitle(map);
+        if (titles == null) return R.error(Code.ISNULL, "没有");
+        titles.forEach(title -> {
+            HashMap<String,Object> t = new HashMap<>();
+            t.put("TiID",title.getId());
+            title.setOptions(optionService.titleOption(t));
+        });
         return R.success(titles, Code.SUCCESS, "完成");
     }
 
@@ -80,7 +87,7 @@ public class UserApi {
         map.put("UID", Integer.parseInt(userID));
         map.put("TID", TID);
         List<Answer> answers = answerService.getAnswer(map);
-        List<Title> titles = titleService.getTestTitle(map);
+        List<Title> titles = titleService.getTitle(map);
         titles.forEach(title -> {
             List<Answer> newA = answers.stream().filter(answer -> answer.getTID() == title.getId()).collect(Collectors.toList());
             title.setAnswers(newA);

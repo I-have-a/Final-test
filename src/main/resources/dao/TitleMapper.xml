@@ -11,11 +11,22 @@
             <result column="tyname" property="name"/>
         </association>
     </resultMap>
-    <select id="getTitleByTestID" resultMap="BaseList">
-        select *
-        from title
-        where TID = #{TID}
-        order by ID
+
+    <select id="getTitleByUserID" resultMap="BaseList">
+        SELECT title.type    AS typeID,
+               title.content,
+               title.ID,
+               type.`name` AS type
+        FROM title
+                 INNER JOIN type ON title.type = type.ID
+        <where>
+            <if test="TID!=null">
+                title.TID = #{TID}
+            <if test="UID!=null">
+            </if>
+                title.UID = #{UID}
+            </if>
+        </where>
     </select>
 
 </mapper>
