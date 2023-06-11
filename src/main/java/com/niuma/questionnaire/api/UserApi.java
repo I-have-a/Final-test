@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("user")
@@ -58,27 +59,46 @@ public class UserApi {
 
     @GetMapping("test")
     public R<List<Test>> test(HttpServletRequest request) {
-        User user = Common.JwtUser(request);
-        List<Test> tests = testService.getTest(user);
+        String userID = Common.JwtUser(request);
+        List<Test> tests = testService.getTest(userID);
         if (tests == null) return R.error(Code.ISNULL, "没有");
         return R.success(tests, Code.SUCCESS, "完成");
     }
 
     @GetMapping("title")
     public R<List<Title>> title(HttpServletRequest request) {
-        User user = Common.JwtUser(request);
-        List<Title> titles = titleService.getTitle(user);
+        String userID = Common.JwtUser(request);
+        List<Title> titles = titleService.getUserTitle(userID);
         if (titles == null) R.error(Code.ISNULL, "没有");
         return R.success(titles, Code.SUCCESS, "完成");
     }
 
     @GetMapping("answer")
-    public R<List<Answer>> answer(Long TID, HttpServletRequest request) {
-        User user = Common.JwtUser(request);
+    public R<List<Title>> answer(Long TID, HttpServletRequest request) {
+        String userID = Common.JwtUser(request);
         HashMap<String, Object> map = new HashMap<>();
-        map.put("UID", user.getId());
+        map.put("UID", Integer.parseInt(userID));
         map.put("TID", TID);
         List<Answer> answers = answerService.getAnswer(map);
+        List<Title> titles = titleService.getTestTitle(map);
+        titles.forEach(title -> {
+            List<Answer> newA = answers.stream().filter(answer -> answer.getTID() == title.getId()).collect(Collectors.toList());
+            title.setAnswers(newA);
+        });
+        return R.success(titles, Code.SERVER, "完成");
+    }
+
+    @GetMapping("reply")
+    public R<Title> reply() {
+
         return R.error(Code.ISNULL, "开发中");
     }
 }
+
+
+
+
+
+
+
+

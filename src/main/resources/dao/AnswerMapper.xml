@@ -4,11 +4,33 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.niuma.questionnaire.dao.AnswerMapper">
     <resultMap id="BaseList" type="com.niuma.questionnaire.entity.Answer">
-        <result property="id" column="ID"/>
-        <result property="content" column="content"/>
+        <result property="id" column="AID"/>
+        <result property="content" column="Acontent"/>
+        <result property="tID" column="TiID"/>
+        <association property="option">
+            <result property="content" column="Ocontent"/>
+            <result property="id" column="oID"/>
+        </association>
     </resultMap>
-    <select id="getAnswerByTest" resultType="com.niuma.questionnaire.entity.Answer">
-        select *
-        from questionnaire.answer;
+    <select id="getAnswerByTest" resultMap="BaseList">
+        SELECT
+            answer.content AS Acontent,
+            answer.ID AS AID,
+            answer.TiID,
+            `option`.ID AS oID,
+            `option`.content AS Ocontent,
+            ti.TID
+        FROM
+            answer
+            INNER JOIN title AS ti ON answer.TiID = ti.ID
+            INNER JOIN `user` ON answer.UID = `user`.ID
+	INNER JOIN test AS t ON ti.TID = t.ID
+	INNER JOIN `option` ON answer.OID = `option`.ID
+        WHERE
+            USER.ID = #{UID}
+          AND t.ID = #{TID}
+        ORDER BY
+            ti.ID
     </select>
+
 </mapper>

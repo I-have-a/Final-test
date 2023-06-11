@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class UserController {
     @GetMapping("/test")
-    public String getIndex(String error, Model model) {
+    public String getIndex(String error,Model model) {
         model.addAttribute("msg", error);
         return "user/error";
     }
@@ -19,7 +19,7 @@ public class UserController {
     }
 
     @RequestMapping("/")
-    public String index() {
+    public String index(){
         return "index";
     }
 }

@@ -8,6 +8,7 @@ import com.niuma.questionnaire.service.TitleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -17,9 +18,14 @@ public class TitleServiceImpl implements TitleService {
     TitleMapper titleMapper;
 
     @Override
-    public List<Title> getTitle(User user) {
+    public List<Title> getUserTitle(String userID) {
         QueryWrapper<Title> wrapper = new QueryWrapper<>();
-        wrapper.eq("UID", user.getId());
+        wrapper.eq("UID", userID);
         return titleMapper.selectList(wrapper);
+    }
+
+    @Override
+    public List<Title> getTestTitle(HashMap<String,Object> map) {
+        return titleMapper.getTitleByTestID(map);
     }
 }

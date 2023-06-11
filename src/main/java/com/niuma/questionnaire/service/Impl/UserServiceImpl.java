@@ -1,5 +1,6 @@
 package com.niuma.questionnaire.service.Impl;
 
+import com.niuma.questionnaire.common.TimeCode;
 import com.niuma.questionnaire.dao.UserMapper;
 import com.niuma.questionnaire.entity.LoginUser;
 import com.niuma.questionnaire.entity.User;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.logging.Handler;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -32,7 +34,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String login(HashMap<String, Object> map) {
+    public String login(HashMap<String,Object> map) {
         //AuthenticationManager authenticate进行用户认证
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(map.get("account"), map.get("password"));
         Authentication authenticate = authenticationManager.authenticate(authenticationToken);
@@ -43,7 +45,7 @@ public class UserServiceImpl implements UserService {
         //如果认证通过了，使用userid生成一个jwt jwt存入ResponseResult返回
         LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
         String userid = loginUser.getUser().getId().toString();
-        String jwt = JwtUtil.createJWT(userid);
+        String jwt = JwtUtil.createJWT(userid, TimeCode.ONE_DAY);
         //把完整的用户信息存入redis  userid作为key
         cacheClient.set("login:" + userid, loginUser);
         return jwt;

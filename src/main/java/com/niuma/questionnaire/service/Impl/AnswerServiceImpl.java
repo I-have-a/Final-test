@@ -17,6 +17,6 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     public List<Answer> getAnswer(HashMap<String, Object> map) {
-        return null;
+        return answerMapper.getAnswerByTest(map);
     }
 }

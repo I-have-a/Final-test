@@ -8,5 +8,5 @@ public interface UserService {
 
     Integer signup(User user);
 
-    String login(HashMap<String, Object> map);
+    String login(HashMap<String,Object> map);
 }

@@ -45,16 +45,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutSuccessUrl("/")
                 .permitAll()
                 .and().authorizeRequests()
-                .antMatchers("/", "/static/**", "/error")
+                .antMatchers("/", "/login", "/static/**","/user/login")
                 .permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .authorizeRequests()
-                // 对于登录接口 允许匿名访问
-                .antMatchers("/login", "/user/login")
-                .anonymous()
-//                .antMatchers("/testCors").hasAuthority("system:dept:list222")
-                // 除上面外的所有请求全部需要鉴权认证
                 .anyRequest().authenticated();
 
         //添加过滤器

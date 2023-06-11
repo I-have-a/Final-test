@@ -5,10 +5,11 @@ import com.niuma.questionnaire.entity.Answer;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashMap;
 import java.util.List;
 
 @Mapper
 @Repository
 public interface AnswerMapper extends BaseMapper<Answer> {
-    List<Answer> getAnswerByTest();
+    List<Answer> getAnswerByTest(HashMap<String,Object> map);
 }

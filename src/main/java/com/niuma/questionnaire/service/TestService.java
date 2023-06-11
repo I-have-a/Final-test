@@ -6,5 +6,5 @@ import com.niuma.questionnaire.entity.User;
 import java.util.List;
 
 public interface TestService {
-    List<Test> getTest(User user);
+    List<Test> getTest(String userID);
 }

@@ -17,9 +17,9 @@ public class TestServiceImpl implements TestService {
     TestMapper testMapper;
 
     @Override
-    public List<Test> getTest(User user) {
+    public List<Test> getTest(String userID) {
         QueryWrapper<Test> wrapper = new QueryWrapper<>();
-        wrapper.eq("UID", user.getId());
+        wrapper.eq("UID", userID);
         return testMapper.selectList(wrapper);
     }
 }

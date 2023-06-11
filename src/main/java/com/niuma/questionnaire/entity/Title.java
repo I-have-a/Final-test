@@ -13,6 +13,7 @@ import java.util.List;
 public class Title {
     Long id;
     String content;
+    Type type;
     @TableField(exist = false)
     List<Option> options;
     @TableField(exist = false)

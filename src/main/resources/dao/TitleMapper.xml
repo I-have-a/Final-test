@@ -6,6 +6,16 @@
     <resultMap id="BaseList" type="com.niuma.questionnaire.entity.Title">
         <result property="id" column="ID"/>
         <result property="content" column="content"/>
+        <association property="type">
+            <result property="id" column="type"/>
+            <result column="tyname" property="name"/>
+        </association>
     </resultMap>
+    <select id="getTitleByTestID" resultMap="BaseList">
+        select *
+        from title
+        where TID = #{TID}
+        order by ID
+    </select>
 
 </mapper>
